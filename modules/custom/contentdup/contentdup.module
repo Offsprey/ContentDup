@@ -18,7 +18,8 @@ function contentdup_entity_operation(\Drupal\Core\Entity\EntityInterface $entity
     $nodeTitle = $entity->get('title')->value;
     $nid = $entity->get('nid')->value;
     $operations = [];
-    //Add Copy operation to dropdown
+    //Add Copy operation to dropdown, point to controller
+    //with origin node title and nid as parameters
     $operations['duplicate'] = [
         'title' => t('Copy'),
         'url' => \Drupal\Core\Url::fromRoute('contentdup.duplicate',['title' => $nodeTitle, 'nid' => $nid]),        
