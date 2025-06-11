@@ -4,7 +4,7 @@ contentdup.duplicate:
     _controller: \Drupal\contentdup\Controller\DupController::duplicate
     _title: Duplicate Node
   requirements:
-    _permission: access content
+    _permission: administer content
   options:
     parameters:
       title:
