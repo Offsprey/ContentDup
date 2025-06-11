@@ -14,7 +14,7 @@ use Drupal\Core\Url;
 class DupController extends ControllerBase {
   public function duplicate($title, $nid) {
     //exclude internal / metadata fields
-    $exemptFields = ['nid', 'vid', 'uuid', 'title', 'type', 'langcode', 'revision_uid', 'revision_log',
+    $excludedFields = ['nid', 'vid', 'uuid', 'title', 'type', 'langcode', 'revision_uid', 'revision_log',
     'revision_default', 'revision_timestamp', 'isDefaultRevision', 'status', 'uid', 'created',
     'changed', 'promote', 'sticky'];
 
@@ -31,7 +31,7 @@ class DupController extends ControllerBase {
     //iterate origin node fields and copy to new node, ignoring exempt fields
     foreach($pnode->getFields() as $field){
       $fieldName = $field->getName();
-      if(!in_array($fieldName, $exemptFields)) {
+      if(!in_array($fieldName, $excludedFields)) {
         $node->set($fieldName,$field->getValue());
       }  
     }
