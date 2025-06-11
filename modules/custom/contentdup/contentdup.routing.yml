@@ -1,0 +1,13 @@
+contentdup.duplicate:
+  path: /contentdup/{title}/{nid}
+  defaults:
+    _controller: \Drupal\contentdup\Controller\DupController::duplicate
+    _title: Duplicate Node
+  requirements:
+    _permission: access content
+  options:
+    parameters:
+      title:
+        type: 'string'
+      nid:
+        type: 'integer'

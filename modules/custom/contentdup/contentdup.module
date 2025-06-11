@@ -1,0 +1,30 @@
+<?php
+
+use Drupal\node\Entity;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * @file
+ * ContentDup Module hooks.
+ */
+
+/**
+ * Implements hook_entity_operation().
+ */
+function contentdup_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) : array {
+  //dpm($entity);
+  //if entity type is node 
+  if ($entity->getEntityTypeId() == 'node') {
+    $nodeTitle = $entity->get('title')->value;
+    $nid = $entity->get('nid')->value;
+    $operations = [];
+    //Add Copy operation to dropdown
+    $operations['duplicate'] = [
+        'title' => t('Copy'),
+        'url' => \Drupal\Core\Url::fromRoute('contentdup.duplicate',['title' => $nodeTitle, 'nid' => $nid]),        
+        'weight' => 50,
+    ];
+    return $operations;
+  }
+  return [];
+}
