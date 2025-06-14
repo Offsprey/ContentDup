@@ -8,6 +8,7 @@ namespace Drupal\contentdup\Controller;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\node\NodeInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
 
@@ -36,14 +37,21 @@ class DupController extends ControllerBase {
       }  
     }
 
+    $node->setUnpublished();
+
     // Save the node.
     $node->save();
     $newNid = $node->id();
+
+    // Add a message to the user.
+    $this->messenger()->addStatus($this->t('The node %title has been copied.', ['%title' => $node->getTitle()]));
+
 
     //build redirect response to edit form of new node
     $edit_url = Url::fromRoute('entity.node.edit_form', ['node' => $newNid]);    
     $response = new RedirectResponse($edit_url->toString());
     $response->send();
     return $response;
+
   }
 }

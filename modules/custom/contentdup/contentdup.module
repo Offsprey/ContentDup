@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
  * Implements hook_entity_operation().
  */
 function contentdup_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) : array {
-  //if entity type is node 
+  //if entity type is node, get node title and nid
   if ($entity->getEntityTypeId() == 'node') {
     $nodeTitle = $entity->get('title')->value;
     $nid = $entity->get('nid')->value;
@@ -21,7 +21,7 @@ function contentdup_entity_operation(\Drupal\Core\Entity\EntityInterface $entity
     //with origin node title and nid as parameters
     $operations['duplicate'] = [
       'title' => t('Copy'),
-      'url' => \Drupal\Core\Url::fromRoute('contentdup.duplicate',['title' => $nodeTitle, 'nid' => $nid]),        
+      'url' => \Drupal\Core\Url::fromRoute('contentdup.duplicate',['title' => $nodeTitle, 'nid' => $nid]),
       'weight' => 50,
     ];
     return $operations;
