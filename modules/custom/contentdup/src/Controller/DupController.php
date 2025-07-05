@@ -13,13 +13,22 @@ use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
 
 class DupController extends ControllerBase {
+
+  /**
+   * Duplcates node and redirects to edit form.
+   * @param string $title
+   * @param int $nid
+   * 
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   * 
+   */
   public function duplicate($title, $nid) {
     //exclude internal / metadata fields
     $excludedFields = ['nid', 'vid', 'uuid', 'title', 'type', 'langcode', 'revision_uid', 'revision_log',
     'revision_default', 'revision_timestamp', 'isDefaultRevision', 'status', 'uid', 'created',
     'changed', 'promote', 'sticky'];
 
-    //lookup origin node from nid    
+    //lookup origin node from nid
     $pnode = Node::load($nid);
     
     //create new node with same type as origin node
@@ -34,7 +43,7 @@ class DupController extends ControllerBase {
       $fieldName = $field->getName();
       if(!in_array($fieldName, $excludedFields)) {
         $node->set($fieldName,$field->getValue());
-      }  
+      }
     }
 
     $node->setUnpublished();
@@ -48,10 +57,9 @@ class DupController extends ControllerBase {
 
 
     //build redirect response to edit form of new node
-    $edit_url = Url::fromRoute('entity.node.edit_form', ['node' => $newNid]);    
+    $edit_url = Url::fromRoute('entity.node.edit_form', ['node' => $newNid]);
     $response = new RedirectResponse($edit_url->toString());
     $response->send();
     return $response;
-
   }
 }

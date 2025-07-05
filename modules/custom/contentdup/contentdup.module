@@ -9,6 +9,10 @@ use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_entity_operation().
+ * 
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ * @return array
+ *   An array of operations to add to the entity>node operation dropdown.
  */
 function contentdup_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) : array {
   //if entity type is node, get node title and nid

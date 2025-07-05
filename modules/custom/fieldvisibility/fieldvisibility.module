@@ -1,0 +1,58 @@
+<?php
+
+use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
+
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * Add a checkbox to the field config edit form to hide the field from anonymous users.
+ */
+function fieldvisibility_form_field_config_edit_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $field = $form_state->getFormObject()->getEntity();
+  
+  // Add the checkbox to the field settings.
+  $form['fieldvisibility_hide_anonymous'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Hide this field from anonymous users'),
+    '#default_value' => isset($form['#entity']) && $field->getThirdPartySetting('fieldvisibility', 'hide_anonymous', FALSE),
+    '#description' => t('If checked, this field will not be shown to anonymous users when viewing content.'),
+    '#weight' => -4,
+  ];
+
+  // Save the setting when the form is submitted.
+  $form['actions']['submit']['#submit'][] = 'fieldvisibility_field_config_edit_form_submit';
+}
+
+/**
+ * Form submit handler for field config edit form.
+ */
+function fieldvisibility_field_config_edit_form_submit($form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  /** @var \Drupal\field\Entity\FieldConfig $field */
+  $field = $form_state->getFormObject()->getEntity();
+  $hide = $form_state->getValue('fieldvisibility_hide_anonymous');
+  $field->setThirdPartySetting('fieldvisibility', 'hide_anonymous', $hide);
+  $field->save();
+}
+
+/**
+ * Implements hook_entity_view().
+ * Hide fields from anonymous users if the ThirdPartySetting 'hide_anonymous' is TRUE.
+ */
+function fieldvisibility_entity_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+  // Only act on nodes.
+  if ($entity->getEntityTypeId() === 'node' && \Drupal::currentUser()->isAnonymous()) {
+    // Get all field definitions for this bundle.
+    $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $entity->bundle());
+    foreach ($fields as $field_name => $field_definition) {
+      // Only process configurable fields.
+      if ($field_definition instanceof \Drupal\field\Entity\FieldConfig) {
+        $hide = $field_definition->getThirdPartySetting('fieldvisibility', 'hide_anonymous', FALSE);
+        if ($hide && isset($build[$field_name]) && \Drupal::currentUser()->isAnonymous()) {
+          $build[$field_name]['#access'] = FALSE;
+        }
+      }
+    }
+  }
+}
+
